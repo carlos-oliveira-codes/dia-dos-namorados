@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Surpresa da Thayná ❤️</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background-color: #ffe6e6;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 20px;
+            text-align: center;
+            overflow-x: hidden;
+        }
+
+        /* --- TELA DE CLIQUE INICIAL --- */
+        #start-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: #ffe6e6;
+            z-index: 10000;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            transition: opacity 0.5s ease;
+        }
+
+        .heart-pulse {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.2);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        /* --- TELA DE INTRODUÇÃO (CANVAS) --- */
+        #intro-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: #ffe6e6;
+            z-index: 9999;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: opacity 1.5s ease;
+            display: none;
+        }
+
+        #star-canvas {
+            display: block;
+        }
+
+        /* --- CONTAINERS DO SITE --- */
+        .container {
+            background: white;
+            padding: 30px 20px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            max-width: 400px;
+            width: 100%;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        h1 {
+            color: #d1476b;
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+        }
+
+        .item-subtitle {
+            color: #d1476b;
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        p {
+            font-size: 1rem;
+            margin-bottom: 20px;
+            color: #555;
+        }
+
+        .location-reveal {
+            background-color: #fff0f3;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #d1476b;
+            font-weight: 600;
+            color: #b03a58;
+            margin-bottom: 20px;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ffccd5;
+            border-radius: 8px;
+            font-size: 1rem;
+            margin-bottom: 20px;
+            outline: none;
+            text-align: center;
+        }
+
+        input[type="text"]:focus {
+            border-color: #d1476b;
+        }
+
+        button {
+            background-color: #d1476b;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            font-size: 1rem;
+            font-weight: 600;
+            border-radius: 8px;
+            cursor: pointer;
+            width: 100%;
+            transition: background 0.3s;
+        }
+
+        button:hover {
+            background-color: #b03a58;
+        }
+
+        #btn-acertou {
+            background-color: #5cb85c;
+        }
+
+        #btn-acertou:hover {
+            background-color: #4cae4c;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .error-msg {
+            color: red;
+            font-size: 0.85rem;
+            margin-top: -10px;
+            margin-bottom: 15px;
+            display: none;
+        }
+
+        .fatal-error {
+            background-color: #ffcccc;
+            border: 2px solid red;
+            color: #900;
+            padding: 20px;
+            border-radius: 10px;
+            font-family: 'Courier New', Courier, monospace;
+            font-weight: bold;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <audio id="bg-music" loop>
+        <source src="musica.mp3" type="audio/mpeg">
+    </audio>
+
+    <div id="start-overlay">
+        <div class="heart-pulse">❤️</div>
+        <button onclick="startSurprise()"
+            style="width: auto; padding: 15px 30px; font-size: 1.2rem; border-radius: 30px;">
+            Clique para começar
+        </button>
+    </div>
+
+    <div id="intro-screen">
+        <canvas id="star-canvas"></canvas>
+    </div>
+
+    <div id="login-screen" class="container hidden">
+        <h1>Acesso Restrito 🔐</h1>
+        <p>Para iniciar sua surpresa, responda:<br><br>Qual o primeiro apelido fofo que você criou para este
+            programador?</p>
+        <input type="text" id="password-input" placeholder="Digite aqui...">
+        <p id="login-error" class="error-msg">Apelido incorreto! Tente de novo.</p>
+        <button onclick="checkPassword()">Entrar</button>
+    </div>
+
+    <div id="hunt-screen" class="container hidden">
+        <h1>Caça Creamy</h1>
+        <div id="item-subtitle" class="item-subtitle">Item 1: Hidratante Corporal</div>
+        <p id="item-question">Pergunta aqui...</p>
+        <div id="item-location" class="location-reveal hidden">Localização aqui...</div>
+        <button id="btn-acertou" onclick="showLocation()">Acertou! ✨</button>
+        <button id="btn-achei" class="hidden" onclick="nextItem()">Já achei! 🎯</button>
+    </div>
+
+    <div id="puzzle-screen" class="container hidden">
+        <h1>Tudo Encontrado! 🧩</h1>
+        <p>Você achou o kit! Agora, volte para a caixa principal.<br><br>Lá dentro há chocolates e um quebra-cabeça.
+            Monte-o, e digite a frase especial escrita na foto</p>
+        <input type="text" id="phrase-input" placeholder="Digite a mensagem...">
+        <p id="phrase-error" class="error-msg">Mensagem incorreta! Olhe bem no verso do quebra-cabeça.</p>
+        <button onclick="checkPhrase()">Desbloquear Final</button>
+    </div>
+
+    <div id="error-screen" class="container hidden fatal-error">
+        <h1>⚠️ SYSTEM ERROR 404 ⚠️</h1>
+        <p>Erro Crítico!<br><br>O programador não nos forneceu a informação de qual é o último presente no banco de
+            dados.</p>
+        <p>Por favor, vire para trás e contate-o imediatamente para resolução manual.</p>
+    </div>
+
+    <script>
+        /* =========================================
+           PARTE 1: INÍCIO E ANIMAÇÃO DAS ESTRELAS
+           ========================================= */
+        const canvas = document.getElementById('star-canvas');
+        const ctx = canvas.getContext('2d', { willReadFrequently: true });
+
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        let particles = [];
+        let targets = [];
+        let phase = 0;
+        let animationId;
+
+        class Particle {
+            constructor(x, y) {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.targetX = x;
+                this.targetY = y;
+                this.size = Math.random() * 2 + 1.5;
+                this.speed = Math.random() * 0.05 + 0.02;
+            }
+
+            update() {
+                this.x += (this.targetX - this.x) * this.speed;
+                this.y += (this.targetY - this.y) * this.speed;
+            }
+
+            draw() {
+                ctx.fillStyle = '#d1476b';
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        function createTextParticles() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = 'black';
+            const fontSize = window.innerWidth < 500 ? 50 : 80;
+            ctx.font = `bold ${fontSize}px Poppins, sans-serif`;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText('Thayná', canvas.width / 2, canvas.height / 2);
+
+            const data = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            targets = [];
+            for (let y = 0; y < canvas.height; y += 4) {
+                for (let x = 0; x < canvas.width; x += 4) {
+                    const index = (y * canvas.width + x) * 4;
+                    const alpha = data[index + 3];
+                    if (alpha > 128) {
+                        targets.push({ x: x, y: y });
+                    }
+                }
+            }
+
+            if (particles.length === 0) {
+                targets.forEach(t => particles.push(new Particle(t.x, t.y)));
+            } else {
+                matchParticlesToTargets();
+            }
+        }
+
+        function createHeartParticles() {
+            targets = [];
+            const scale = window.innerWidth < 500 ? 8 : 12;
+            const offsetX = canvas.width / 2;
+            const offsetY = canvas.height / 2 - 20;
+
+            for (let t = 0; t < Math.PI * 2; t += 0.05) {
+                const x = 16 * Math.pow(Math.sin(t), 3);
+                const y = -(13 * Math.cos(t) - 5 * Math.cos(2 * t) - 2 * Math.cos(3 * t) - Math.cos(4 * t));
+
+                targets.push({
+                    x: x * scale + offsetX,
+                    y: y * scale + offsetY
+                });
+            }
+            matchParticlesToTargets();
+        }
+
+        function matchParticlesToTargets() {
+            while (particles.length < targets.length) {
+                particles.push(new Particle(canvas.width / 2, canvas.height / 2));
+            }
+            for (let i = 0; i < particles.length; i++) {
+                if (i < targets.length) {
+                    particles[i].targetX = targets[i].x;
+                    particles[i].targetY = targets[i].y;
+                } else {
+                    particles[i].targetX = -100;
+                    particles[i].targetY = -100;
+                }
+            }
+        }
+
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            particles.forEach(p => {
+                p.update();
+                p.draw();
+            });
+            animationId = requestAnimationFrame(animate);
+        }
+
+        function startSurprise() {
+            const audio = document.getElementById("bg-music");
+            audio.volume = 0.5;
+            audio.play().catch(e => console.log("Erro ao reproduzir áudio:", e));
+
+            const overlay = document.getElementById('start-overlay');
+            overlay.style.opacity = '0';
+            setTimeout(() => {
+                overlay.style.display = 'none';
+                document.getElementById('intro-screen').style.display = 'flex';
+
+                createTextParticles();
+                animate();
+
+                setTimeout(() => {
+                    createHeartParticles();
+                }, 3500);
+
+                setTimeout(() => {
+                    const intro = document.getElementById('intro-screen');
+                    intro.style.opacity = '0';
+
+                    setTimeout(() => {
+                        intro.style.display = 'none';
+                        cancelAnimationFrame(animationId);
+                        document.getElementById('login-screen').classList.remove('hidden');
+                    }, 1500);
+                }, 7000);
+
+            }, 500);
+        }
+
+        // --- FUNÇÃO PARA FADE OUT DA MÚSICA ---
+        function fadeOutAudio() {
+            const audio = document.getElementById("bg-music");
+            // Reduz o volume a cada 100ms até chegar a 0
+            let fadeAudio = setInterval(function () {
+                if (audio.volume > 0.05) {
+                    audio.volume -= 0.05;
+                } else {
+                    audio.volume = 0;
+                    audio.pause();
+                    clearInterval(fadeAudio);
+                }
+            }, 100); // Demora 1 segundo no total para silenciar (10 passos x 100ms)
+        }
+
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            if (document.getElementById('intro-screen').style.display === 'flex') {
+                createHeartParticles();
+            }
+        });
+
+
+        /* =========================================
+           PARTE 2: LÓGICA DO JOGO E CAÇA AO TESOURO
+           ========================================= */
+
+        function checkPassword() {
+            const input = document.getElementById("password-input").value.trim().toLowerCase();
+            if (input === "lilinho") {
+                // Inicia o fade out da música antes de mudar a tela
+                fadeOutAudio();
+
+                document.getElementById("login-screen").classList.add("hidden");
+                document.getElementById("hunt-screen").classList.remove("hidden");
+                loadItem();
+            } else {
+                document.getElementById("login-error").style.display = "block";
+            }
+        }
+
+        const items = [
+            {
+                title: "Item 1: Hidratante Corporal",
+                question: "🧴 Pergunta 1: Qual o nosso lanche favorito?",
+                location: "O Hidratante Corporal está debaixo do dispositivo que uso para jogar."
+            },
+            {
+                title: "Item 2: Hidratante Facial",
+                question: "🧼 Pergunta 2: Qual foi o primeiro ursinho que você me deu?",
+                location: "O Hidratante Facial está dentro desse ursinho que você meu deu."
+            },
+            {
+                title: "Item 3: Filtro Solar",
+                question: "☀️ Pergunta 3: Eu prefiro matemática ou português?",
+                location: "O Filtro Solar está dentro da caixa de sapato do meu tênis preferido."
+            },
+            {
+                title: "Item 4: Protetor Labial",
+                question: "💋 Pergunta 4: Onde você vai no meu quarto pegar uma escova sempre que quer ajeitar o cabelo?",
+                location: "O Protetor Labial está no local onde voce pega a escova sempre."
+            }
+        ];
+
+        let currentItemIndex = 0;
+
+        function loadItem() {
+            document.getElementById("item-subtitle").innerText = items[currentItemIndex].title;
+            document.getElementById("item-question").innerText = items[currentItemIndex].question;
+            document.getElementById("item-location").innerText = items[currentItemIndex].location;
+
+            document.getElementById("item-location").classList.add("hidden");
+            document.getElementById("btn-acertou").classList.remove("hidden");
+            document.getElementById("btn-achei").classList.add("hidden");
+        }
+
+        function showLocation() {
+            document.getElementById("btn-acertou").classList.add("hidden");
+            document.getElementById("item-location").classList.remove("hidden");
+            document.getElementById("btn-achei").classList.remove("hidden");
+        }
+
+        function nextItem() {
+            currentItemIndex++;
+            if (currentItemIndex < items.length) {
+                const huntScreen = document.getElementById("hunt-screen");
+                huntScreen.style.animation = "none";
+                setTimeout(() => huntScreen.style.animation = "fadeIn 0.5s ease-in-out", 10);
+                loadItem();
+            } else {
+                document.getElementById("hunt-screen").classList.add("hidden");
+                document.getElementById("puzzle-screen").classList.remove("hidden");
+            }
+        }
+
+        function checkPhrase() {
+            const phraseInput = document.getElementById("phrase-input").value.trim().toLowerCase();
+            const secretPhrase = "eu te amo";
+
+            if (phraseInput === secretPhrase) {
+                document.getElementById("puzzle-screen").classList.add("hidden");
+                document.getElementById("error-screen").classList.remove("hidden");
+            } else {
+                document.getElementById("phrase-error").style.display = "block";
+            }
+        }
+    </script>
+</body>
+
+</html>
